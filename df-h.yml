@@ -4,7 +4,7 @@
   tasks:
     - name: Execure the DF -H command
       register: dfout
-      command: "df -h"   
+      command: "df -h"
+      ignore_errors: yes
       
-    - debug: 
-        var: dfout.stdout_lines
+    - debug: msg="{{ dfout.stdout_lines }}"
