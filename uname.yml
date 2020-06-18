@@ -4,3 +4,6 @@
   tasks:
     - name: Execure the UNAME command
       command: "uname -a"
+      ignore_errors: yes
+      register: uname_result        
+     - debug: msg="{{ uname_result.stdout }}"
