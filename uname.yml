@@ -1,0 +1,6 @@
+---
+- name: Check hostname, version and distr.
+  hosts: localhost
+  tasks:
+    - name: Execure the UNAME command
+      command: "uname -a"
