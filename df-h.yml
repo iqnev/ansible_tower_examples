@@ -1,0 +1,10 @@
+---
+- name: Check disk size and etc..
+  hosts: localhost
+  tasks:
+    - name: Execure the DF -H command
+      register: dfout
+      command: "df -h"   
+      
+    - debug: 
+        var: dfout.stdout_lines
