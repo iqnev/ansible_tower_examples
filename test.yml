@@ -1,0 +1,29 @@
+--
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    lock_dir: "/tmp/ansible-playbook-{{ ansible_host }}.lock"
+  tasks:
+    - name: create lock dir if not exists
+      command: mkdir "{{ lock_dir }}"
+      args:
+        warn: false
+      register: lockcode
+      ignore_errors: true
+      changed_when: "lockcode.rc|int==0"
+    - debug:
+        msg: "{{ lockcode.changed }}"
+        
+        
+   tasks:
+      - name: Check that the somefile.conf exists
+        stat:
+          path: /etc/file.txt
+        register: stat_result
+
+      - name: Create the file, if it doesnt exist already
+        file:
+          path: /etc/file.txt
+          state: touch
+        when: not stat_result.stat.exists
