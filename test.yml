@@ -1,33 +1,34 @@
+---
 - hosts: localhost
   connection: local
   gather_facts: no
   vars:
-    lock_file: "/tmp/ansible-playbook-{{ ansible_host }}.lock"
+    lock_file: "/home/fortran/playbooks/operation.lock"
   tasks:
-    - name: create lock_file if not exists
-      shell: echo "$$" | tee "{{ lock_file }}.$$" && ln "{{ lock_file }}.$$" "{{ lock_file }}"
-      args:
-        warn: false
-      register: lockcode
-      ignore_errors: true
-      changed_when: "lockcode.rc|int==0"
+    - name: Check that the operation.lock exists
+      stat:
+        path: "{{ lock_file }}"
+      register: stat_result
     - debug:
-        msg: "{{ lockcode.changed }}"
-    - name: delete lock_file.$$
-      shell: cat "{{ lock_file }}";rm "{{ lock_file }}.{{ lockcode.stdout }}"
-      args:
-        warn: false
-      ignore_errors: true
+        msg: "{{stat_result}}"
         
-        
-   tasks:
-      - name: Check that the somefile.conf exists
-        stat:
-          path: /etc/file.txt
-        register: stat_result
+    - name: Abort execution, if the file exist already
+      fail: 
+        msg: The file {{ lock_file }} exist already
+      when: stat_result.stat.exists 
 
-      - name: Create the file, if it doesnt exist already
-        file:
-          path: /etc/file.txt
-          state: touch
-        when: not stat_result.stat.exists
+    - name: Create the file, if it doesnt exist already
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+      when: not stat_result.stat.exists
+      
+    - pause:
+        minutes: 1
+        
+    - name: Remove file
+      file:
+        path: "{{ lock_file }}"
+        state: absent
+      when: not stat_result.stat.exists
+         
