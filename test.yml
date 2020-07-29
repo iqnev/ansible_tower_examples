@@ -31,4 +31,15 @@
         path: "{{ lock_file }}"
         state: absent
       when: not stat_result.stat.exists
+
+    - name: Validate if a String is present in the file.
+      lineinfile:
+        path: /home/fortran/playbooks/uname.txt
+        line: "LogLevel debug"
+        state: absent
+      check_mode: yes
+      register: state_out
+    - debug:
+        msg: "Debug is not enable"
+      when: state_out is not changed
          
