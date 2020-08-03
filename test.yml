@@ -42,4 +42,30 @@
     - debug:
         msg: "Debug is not enable"
       when: state_out is not changed
+      
+      
+      
+        tasks:
+    - name: Check that the log file exists
+      stat:
+       path: /home/fortran/playbooks/uname.txt
+      retries: 100
+      delay: 5
+      register: stat_result
+      until: stat_result.stat.exists == true
+    - debug:
+        msg: "{{ stat_result.stat.exists }}"
+
+    - name: Validate if a String is present in the file.
+      lineinfile:
+        path: /home/fortran/playbooks/uname.txt
+        line: "LogLevel debug"
+      check_mode: yes
+      retries: 100
+      delay: 5
+      register: presence
+      until: presence is defined and presence.changed==false
+      ignore_errors: yes
+    - debug:
+        msg: "{{ presence }}"
          
