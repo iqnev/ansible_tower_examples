@@ -68,4 +68,11 @@
       ignore_errors: yes
     - debug:
         msg: "{{ presence }}"
+        
+        
+     - name: Read file "{{ log_file }}" from the remote machine with cat
+  shell: cat "{{ log_file }}"
+  register: em_c8yda_install_log_cat
+- debug: 
+    msg: "{{ em_c8yda_install_log_cat.stdout }}"
          
