@@ -70,9 +70,19 @@
         msg: "{{ presence }}"
         
         
-     - name: Read file "{{ log_file }}" from the remote machine with cat
-  shell: cat "{{ log_file }}"
-  register: em_c8yda_install_log_cat
-- debug: 
-    msg: "{{ em_c8yda_install_log_cat.stdout }}"
+- name: Check AAAAAAAAAAAAAAAA
+      stat:
+       path: /home/fortran/playbooks/test.txt
+      register: full_log
+    - debug:
+         msg: "{{ full_log.stat.exists}}"
+      
+    - name: Read file /home/fortran/playbooks/test.txt from the remote machine with cat
+      shell: cat /home/fortran/playbooks/test.txt
+      register: em_c8yda_install_log_cat
+      when: (presence is not defined or presence.changed==true) and (full_log.stat.exists == true)
+
+    - debug: 
+         msg: "{{ em_c8yda_install_log_cat.stdout }}"
+      when: em_c8yda_install_log_cat.stdout is defined
          
